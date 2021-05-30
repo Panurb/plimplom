@@ -6,7 +6,7 @@ Tracks are defined in a custom txt format. They are read in as a numpy array and
 [bpm]\
 [channel name] [pattern number] ... [pattern number]\
 ...\
-[channel name] [pattern number] ... [pattern number]\
+[channel name] [pattern number] ... [pattern number]
 
 [channel name]\
 [synth shape] [frequency] [length] [volume] [panning]\
@@ -15,6 +15,9 @@ Tracks are defined in a custom txt format. They are read in as a numpy array and
 [pattern number] [note][octave] ... [note][octave] [interval]\
 ...\
 [pattern number] [note][octave] ... [note][octave] [interval]
+
+[channel name]\
+...
 
 ### Synth shape ###
 Possible values are:
