@@ -1,5 +1,5 @@
 from synth import Synth, SAMPLE_RATE
-from filter import Filter, normalize, low_pass
+from filter import Filter, normalize, low_pass, high_pass
 
 import os
 import time
@@ -82,7 +82,7 @@ class Track:
         self.length = 0
 
         file = open(f'tracks/{self.name}.txt')
-        lines = [l for l in file.readlines() if '#' not in l]
+        lines = [l for l in file.readlines() if l[0] != '#']
         file.close()
         
         self.bpm = int(lines[0])
@@ -105,13 +105,16 @@ class Track:
         name = ''
         synths = []
         patterns = []
+        channels = []
+        func = ''
 
         for line in lines[i:]:
-            if not line.strip():
+            line = line.strip()
+            if not line:
                 if name:
                     if name[0] == '/':
                         self.filters[name] = Filter(
-                            name, self.length, self.bpm, synths, patterns)
+                            name, self.length, self.bpm, channels, patterns, func)
                     else:
                         self.channels[name] = Channel(
                             name, self.length, self.bpm, synths, patterns)
@@ -119,9 +122,13 @@ class Track:
                 continue
 
             if not name:
-                name = line.strip()
+                if line[0] == '/':
+                    name, func = line.split()
+                else:
+                    name = line
                 synths = []
                 patterns = []
+                channels = []
             elif line[0].isdigit():
                 int(line.split()[0])
                 notes = []
@@ -139,7 +146,7 @@ class Track:
                 patterns.append(notes)
             else:
                 if name[0] == '/':
-                    synths.append(line.strip())
+                    channels.append(line)
                 else:
                     shape, freq, length, env, panning = line.split()
                     length = float(length)

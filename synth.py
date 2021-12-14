@@ -18,6 +18,8 @@ def note_to_frequency(note):
 def sine(freq, length):
     t = np.linspace(0, length, int(length * SAMPLE_RATE))
     y = np.sin(2 * np.pi * freq * t)
+    for i in range(2, 7):
+        y += 2**-i * np.sin(2 * np.pi * freq * t * i)
     return y
 
 

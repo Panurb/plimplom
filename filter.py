@@ -33,23 +33,27 @@ def low_pass(x, alpha):
 @njit
 def high_pass(x, alpha):
     y = np.zeros_like(x)
-    y[0] = alpha[0] * x[0]
+    y[0] = x[0]
     for i in range(1, y.shape[0]):
-        y[i] = alpha[i] * x[i] + (1 - alpha[i]) * y[i - 1]
+        y[i] = alpha[i] * y[i - 1] + alpha[i] * (x[i] - x[i - 1])
 
     return y
 
 
 class Filter:
-    def __init__(self, name, length, bpm, channels, patterns):
+    def __init__(self, name, length, bpm, channels, patterns, func):
         self.name = name
         self.length = length
         self.bpm = bpm
         self.channels = channels
         self.patterns = patterns
-        self.function = low_pass
         self.quarter_note = 0.25 * 60 / self.bpm * SAMPLE_RATE
         self.duration = self.length / (self.bpm / BEATS_PER_BAR / 60)
+        self.function = lambda x, y: x
+        if func == 'lowpass':
+            self.function = low_pass
+        elif func == 'highpass':
+            self.function = high_pass
         
     def get_filter(self):
         filter = np.ones(int(self.duration * SAMPLE_RATE))
